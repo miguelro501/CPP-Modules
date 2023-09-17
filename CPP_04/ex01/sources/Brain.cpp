@@ -1,15 +1,5 @@
 #include <Brain.hpp>
 
-Brain::Brain()
-{
-	std::cout << "Brain Default Constructor" << std::endl;
-}
-
-Brain::Brain(const Brain &src)
-{
-	*this = src;
-	std::cout << "Brain Copy Constructor" << std::endl;
-}
 
 Brain &Brain::operator=(const Brain &other)
 {
@@ -20,6 +10,17 @@ Brain &Brain::operator=(const Brain &other)
 	}
 	std::cout << "Brain Copy Assignment" << std::endl;
 	return (*this);
+}
+//---------------constructors--------------------------
+Brain::Brain()
+{
+	std::cout << "Brain Default Constructor" << std::endl;
+}
+
+Brain::Brain(const Brain &src)
+{
+	*this = src;
+	std::cout << "Brain Copy Constructor" << std::endl;
 }
 
 Brain::~Brain()

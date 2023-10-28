@@ -1,4 +1,5 @@
 #include "PmergeMe.hpp"
+#include "algorithm"
 
 //Functions
 
@@ -47,6 +48,35 @@ bool PmergeMe::initialize(char **inputs, int size)
 double PmergeMe::sortVector()
 {
 	clock_t start = clock();
+
+	std::vector<int>			main;
+	std::vector<int>			pend;
+	std::vector<int>::iterator	itMain;
+	std::vector<int>::iterator	itPend;
+
+	for (int i = 0; i < sizeSequence - 1; i+=2)
+	{
+		if (vectorSequence[i] < vectorSequence[i + 1])
+		{
+			main.push_back(vectorSequence[i + 1]);
+			pend.push_back(vectorSequence[i]);
+		}
+		else
+		{
+			main.push_back(vectorSequence[i]);
+			pend.push_back(vectorSequence[i + 1]);
+		}
+	}
+	if (sizeSequence % 2 != 0)
+        main.push_back(vectorSequence[sizeSequence - 1]);
+
+	std::sort(main.begin(), main.end());
+	std::sort(pend.begin(), pend.end());
+
+	main.insert(main.end(), pend.begin(), pend.end());
+
+	std::sort(main.begin(), main.end());
+	this->vectorSequence = main;
 	
 	clock_t end = clock();
 	return (static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000);
@@ -54,22 +84,61 @@ double PmergeMe::sortVector()
 
 double PmergeMe::sortList()
 {
-	clock_t start = clock();
-	
-	clock_t end = clock();
-	return (static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000);
+    clock_t start = clock();
+    
+    std::list<int> main;
+    std::list<int> pend;
+    std::list<int>::iterator it = listSequence.begin();
+    std::list<int>::iterator nextIt = it;
+    ++nextIt;
+    while (nextIt != listSequence.end() && it != listSequence.end())
+	{
+        int current = *it;
+        int next = *nextIt;
+
+		if (current < next)
+		{
+        	main.push_back(next);
+        	pend.push_back(current);
+		}
+		else
+		{
+			main.push_back(current);
+        	pend.push_back(next);
+		}
+        ++it;
+        ++it;
+        nextIt = it;
+        ++nextIt;
+    }
+	if (it != listSequence.end())
+        main.push_back(*it);
+
+    main.sort();
+    pend.sort();
+
+    main.insert(main.end(), pend.begin(), pend.end());
+
+    main.sort();
+    this->listSequence = main;
+    clock_t end = clock();
+    return (static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000);
 }
 
 void PmergeMe::displayResults()
 {
     std::cout << "Before: ";
-    for (long unsigned int i = 0; i < vectorSequence.size(); i++)
-        std::cout << vectorSequence[i] << " ";
+	std::vector<int>::iterator it;
+    for (it = vectorSequence.begin(); it != vectorSequence.end(); it++)
+        std::cout << *it << " ";
     std::cout << "\nAfter: ";
 	double listTime = sortList();
 	double vectorTime = sortVector();
-	for (long unsigned int i = 0; i < vectorSequence.size(); i++)
-        std::cout << vectorSequence[i] << " ";
+	for (it = vectorSequence.begin(); it != vectorSequence.end(); it++)
+        std::cout << *it << " ";
+	/* std::cout << "\n";
+	for (it = vectorSequence.begin(); it != vectorSequence.end(); it++)
+        std::cout << *it << " "; */
 	std::cout << "\nTime to process a range of " << this->sizeSequence << " elements with std::list : " << listTime << "ms\n";
 	std::cout << "Time to process a range of " << this->sizeSequence << " elements with std::vector : " << vectorTime << "ms\n";
 }
